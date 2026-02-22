@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>manningcalc — Open Channel Flow Guide</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1a2e; --muted: #6b7280;
+    --card: #f8f9fa; --border: #e5e7eb; --accent: #2563eb;
+    --accent-light: #dbeafe; --code-bg: #f1f5f9;
+    --table-stripe: #f9fafb; --highlight: #fef3c7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+      --card: #1e293b; --border: #334155; --accent: #60a5fa;
+      --accent-light: #1e3a5f; --code-bg: #1e293b;
+      --table-stripe: #1e293b; --highlight: #422006;
+    }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg); color: var(--fg);
+    line-height: 1.7; padding: 2rem 1rem;
+  }
+  .container { max-width: 800px; margin: 0 auto; }
+  a { color: var(--accent); }
+  .back-link {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-size: 0.9rem; text-decoration: none; margin-bottom: 1.5rem;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  /* Hero */
+  .hero {
+    text-align: center; padding: 2.5rem 1rem 2rem;
+    border-bottom: 1px solid var(--border); margin-bottom: 2.5rem;
+  }
+  .hero h1 { font-size: 2.2rem; letter-spacing: -0.02em; }
+  .hero .tagline { color: var(--muted); font-size: 1.1rem; margin-top: 0.4rem; }
+
+  /* Sections */
+  h2 {
+    font-size: 1.4rem; margin: 2.5rem 0 0.8rem;
+    padding-bottom: 0.3rem; border-bottom: 2px solid var(--accent);
+  }
+  h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
+  p, li { margin-bottom: 0.6rem; }
+  ul, ol { padding-left: 1.5rem; }
+
+  /* Equations */
+  .equation {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 1rem 1.2rem; margin: 1rem 0;
+    font-family: 'Cambria Math', 'STIX Two Math', Georgia, serif;
+    font-size: 1.15rem; text-align: center; overflow-x: auto;
+  }
+  code {
+    background: var(--code-bg); padding: 0.15em 0.4em;
+    border-radius: 3px; font-size: 0.92em;
+  }
+
+  /* Tables */
+  table {
+    width: 100%; border-collapse: collapse; margin: 1rem 0;
+    font-size: 0.92rem;
+  }
+  th, td {
+    padding: 0.55rem 0.8rem; border: 1px solid var(--border);
+    text-align: left;
+  }
+  th { background: var(--accent-light); font-weight: 600; }
+  tr:nth-child(even) td { background: var(--table-stripe); }
+
+  /* Cards for cross-sections */
+  .shape-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0;
+  }
+  .shape-card h4 { margin-bottom: 0.5rem; font-size: 1rem; }
+
+  /* Glossary */
+  dl { margin: 1rem 0; }
+  dt { font-weight: 600; margin-top: 0.8rem; }
+  dd { margin-left: 1.2rem; color: var(--fg); }
+
+  /* Workflow steps */
+  .step {
+    display: flex; gap: 0.8rem; margin: 0.8rem 0;
+    align-items: flex-start;
+  }
+  .step-num {
+    background: var(--accent); color: #fff; width: 28px; height: 28px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; font-weight: 700; flex-shrink: 0; margin-top: 0.1rem;
+  }
+
+  .note {
+    background: var(--highlight); border-radius: 6px;
+    padding: 0.8rem 1rem; margin: 1rem 0; font-size: 0.92rem;
+  }
+
+  /* Print */
+  @media print {
+    body { padding: 0; }
+    .back-link { display: none; }
+    h2 { break-after: avoid; }
+    .shape-card { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<a href="/" class="back-link">← Back to manningcalc</a>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>🌊 manningcalc</h1>
+  <p class="tagline">Free, browser-based Manning's equation solver for open channel flow</p>
+</div>
+
+<!-- 1. What is Open Channel Flow? -->
+<h2>1. What is Open Channel Flow?</h2>
+<p>
+  Open channel flow occurs when water flows with a <strong>free surface</strong> exposed to the
+  atmosphere. Unlike pressurized pipe flow, the driving force is <strong>gravity</strong> — the
+  water surface slope provides the energy gradient.
+</p>
+<h3>Natural vs. Man-Made Channels</h3>
+<ul>
+  <li><strong>Natural channels</strong> — rivers, streams, floodplains. Irregular cross-sections,
+    variable roughness, and meandering alignments.</li>
+  <li><strong>Man-made channels</strong> — drainage ditches, irrigation canals, roadside swales,
+    stormwater channels. Designed with regular geometry (trapezoidal, rectangular) for predictable
+    hydraulic performance.</li>
+</ul>
+<h3>How It Differs from Pipe Flow</h3>
+<table>
+  <tr><th>Property</th><th>Open Channel</th><th>Pipe Flow</th></tr>
+  <tr><td>Driving force</td><td>Gravity (bed slope)</td><td>Pressure difference</td></tr>
+  <tr><td>Free surface</td><td>Yes — exposed to atmosphere</td><td>No — fully enclosed</td></tr>
+  <tr><td>Cross-section</td><td>Variable (depends on depth)</td><td>Fixed (full pipe)</td></tr>
+  <tr><td>Design equation</td><td>Manning's equation</td><td>Darcy-Weisbach / Hazen-Williams</td></tr>
+</table>
+
+<!-- 2. Manning's Equation -->
+<h2>2. Manning's Equation</h2>
+<p>
+  Manning's equation is the most widely used formula for computing <strong>uniform flow</strong>
+  (constant depth and velocity) in open channels. It relates discharge to channel geometry,
+  roughness, and slope.
+</p>
+
+<div class="equation">
+  Q = (k / n) × A × R<sup>2/3</sup> × S<sup>1/2</sup>
+</div>
+
+<table>
+  <tr><th>Symbol</th><th>Name</th><th>US Customary</th><th>SI (Metric)</th></tr>
+  <tr><td><strong>Q</strong></td><td>Discharge (flow rate)</td><td>ft³/s (cfs)</td><td>m³/s</td></tr>
+  <tr><td><strong>k</strong></td><td>Unit conversion factor</td><td>1.49</td><td>1.0</td></tr>
+  <tr><td><strong>n</strong></td><td>Manning's roughness coefficient</td><td colspan="2">dimensionless (same in both systems)</td></tr>
+  <tr><td><strong>A</strong></td><td>Cross-sectional flow area</td><td>ft²</td><td>m²</td></tr>
+  <tr><td><strong>R</strong></td><td>Hydraulic radius = A / P</td><td>ft</td><td>m</td></tr>
+  <tr><td><strong>S</strong></td><td>Channel bed slope</td><td colspan="2">ft/ft or m/m (dimensionless)</td></tr>
+</table>
+
+<div class="note">
+  <strong>US vs. Metric:</strong> The only difference is the conversion factor <em>k</em>. In US
+  customary units k = 1.49; in SI units k = 1.0. manningcalc uses US customary units (k = 1.49)
+  by default.
+</div>
+
+<!-- 3. Flow Classification -->
+<h2>3. Flow Classification</h2>
+<p>
+  The <strong>Froude number</strong> classifies flow behavior based on the ratio of inertial forces
+  to gravitational forces:
+</p>
+<div class="equation">
+  Fr = V / √(g × D<sub>h</sub>) &nbsp;&nbsp; where &nbsp; D<sub>h</sub> = A / T
+</div>
+<table>
+  <tr><th>Froude Number</th><th>Flow Regime</th><th>Characteristics</th></tr>
+  <tr>
+    <td>Fr &lt; 1</td><td><strong>Subcritical</strong></td>
+    <td>Slow, deep, tranquil flow. Disturbances propagate upstream. Common in mild-slope channels.</td>
+  </tr>
+  <tr>
+    <td>Fr = 1</td><td><strong>Critical</strong></td>
+    <td>Transition point. Minimum specific energy for a given discharge. Unstable — avoid in design.</td>
+  </tr>
+  <tr>
+    <td>Fr &gt; 1</td><td><strong>Supercritical</strong></td>
+    <td>Fast, shallow, shooting flow. Disturbances cannot travel upstream. Steep slopes, spillways.</td>
+  </tr>
+</table>
+
+<h3>Hydraulic Jump</h3>
+<p>
+  When supercritical flow transitions to subcritical, a <strong>hydraulic jump</strong> occurs — a
+  turbulent, energy-dissipating phenomenon. The water surface rises abruptly, converting kinetic
+  energy to potential energy and heat. Hydraulic jumps are used in stilling basins downstream of
+  dams and spillways.
+</p>
+
+<!-- 4. Cross-Section Geometry -->
+<h2>4. Cross-Section Geometry</h2>
+<p>
+  Manning's equation requires the flow <strong>area (A)</strong>, <strong>wetted perimeter (P)</strong>,
+  and <strong>top width (T)</strong>, all of which depend on the channel shape and flow depth
+  <em>y</em>.
+</p>
+
+<div class="shape-card">
+  <h4>📐 Rectangle</h4>
+  <p>Bottom width <em>b</em>, depth <em>y</em>.</p>
+  <table>
+    <tr><td>Area</td><td><code>A = b × y</code></td></tr>
+    <tr><td>Wetted perimeter</td><td><code>P = b + 2y</code></td></tr>
+    <tr><td>Top width</td><td><code>T = b</code></td></tr>
+    <tr><td>Hydraulic radius</td><td><code>R = (b × y) / (b + 2y)</code></td></tr>
+  </table>
+  <p>Used for: concrete-lined channels, box culverts, laboratory flumes.</p>
+</div>
+
+<div class="shape-card">
+  <h4>⬡ Trapezoid</h4>
+  <p>Bottom width <em>b</em>, depth <em>y</em>, side slope <em>z</em> (H:V).</p>
+  <table>
+    <tr><td>Area</td><td><code>A = (b + z×y) × y</code></td></tr>
+    <tr><td>Wetted perimeter</td><td><code>P = b + 2y√(1 + z²)</code></td></tr>
+    <tr><td>Top width</td><td><code>T = b + 2zy</code></td></tr>
+    <tr><td>Hydraulic radius</td><td><code>R = A / P</code></td></tr>
+  </table>
+  <p>Used for: earth channels, irrigation canals, highway drainage ditches. Most common shape in practice.</p>
+</div>
+
+<div class="shape-card">
+  <h4>▽ Triangle</h4>
+  <p>Side slope <em>z</em> (H:V), depth <em>y</em>. No bottom width (b = 0).</p>
+  <table>
+    <tr><td>Area</td><td><code>A = z × y²</code></td></tr>
+    <tr><td>Wetted perimeter</td><td><code>P = 2y√(1 + z²)</code></td></tr>
+    <tr><td>Top width</td><td><code>T = 2zy</code></td></tr>
+    <tr><td>Hydraulic radius</td><td><code>R = (z × y) / (2√(1 + z²))</code></td></tr>
+  </table>
+  <p>Used for: roadside gutters, small swales, V-shaped ditches.</p>
+</div>
+
+<div class="shape-card">
+  <h4>⭕ Circle (Partial Flow)</h4>
+  <p>Diameter <em>d</em>, depth <em>y</em>. Geometry uses the central angle θ = 2 × arccos(1 − 2y/d).</p>
+  <table>
+    <tr><td>Area</td><td><code>A = (d²/8)(θ − sin θ)</code></td></tr>
+    <tr><td>Wetted perimeter</td><td><code>P = (d/2) × θ</code></td></tr>
+    <tr><td>Top width</td><td><code>T = d × sin(θ/2)</code></td></tr>
+    <tr><td>Hydraulic radius</td><td><code>R = (d/4)(1 − sin θ / θ)</code></td></tr>
+  </table>
+  <p>Used for: storm sewers, culverts flowing partially full, drainage pipes.</p>
+</div>
+
+<!-- 5. Normal Depth & Critical Depth -->
+<h2>5. Normal Depth &amp; Critical Depth</h2>
+
+<h3>Normal Depth (y<sub>n</sub>)</h3>
+<p>
+  Normal depth is the depth at which <strong>uniform flow</strong> occurs — the gravitational force
+  driving the water exactly balances the friction resisting it. At normal depth, the water surface
+  is parallel to the channel bed.
+</p>
+<p>
+  Since area <em>A</em> and hydraulic radius <em>R</em> both depend on depth <em>y</em>,
+  Manning's equation cannot be solved directly for <em>y</em>. Instead, we solve it
+  <strong>iteratively</strong> — manningcalc uses a bisection method to find the depth where
+  the computed Q matches the target Q.
+</p>
+
+<h3>Critical Depth (y<sub>c</sub>)</h3>
+<p>
+  Critical depth is the depth where <strong>specific energy is minimum</strong> for a given
+  discharge, or equivalently where Fr = 1. It is found by solving:
+</p>
+<div class="equation">
+  Q² × T / (g × A³) = 1
+</div>
+<p>
+  This also requires iterative solution since A and T depend on y. The critical depth separates
+  subcritical (y &gt; y<sub>c</sub>) from supercritical (y &lt; y<sub>c</sub>) flow.
+</p>
+
+<div class="note">
+  <strong>Design rule of thumb:</strong> For stable channel design, ensure the normal depth is
+  well above critical depth (subcritical flow) to avoid unstable flow conditions and potential
+  hydraulic jumps.
+</div>
+
+<!-- 6. How to Use manningcalc -->
+<h2>6. How to Use manningcalc</h2>
+
+<div class="step">
+  <span class="step-num">1</span>
+  <div><strong>Select a channel shape</strong> — choose rectangle, trapezoid, triangle, or circle
+    from the shape selector.</div>
+</div>
+<div class="step">
+  <span class="step-num">2</span>
+  <div><strong>Choose what to solve for</strong> — pick the unknown variable (Q, y, n, S, or b)
+    from the dropdown. manningcalc will compute this from the other known values.</div>
+</div>
+<div class="step">
+  <span class="step-num">3</span>
+  <div><strong>Enter known parameters</strong> — fill in the remaining fields: dimensions, Manning's n,
+    bed slope, and/or discharge. The cross-section diagram updates live.</div>
+</div>
+<div class="step">
+  <span class="step-num">4</span>
+  <div><strong>Read the results</strong> — manningcalc instantly computes the unknown variable plus
+    velocity, Froude number, flow area, wetted perimeter, hydraulic radius, and flow regime
+    (subcritical / critical / supercritical).</div>
+</div>
+<div class="step">
+  <span class="step-num">5</span>
+  <div><strong>Print or export</strong> — click Print to generate a calculation summary showing the
+    cross-section diagram and all results.</div>
+</div>
+
+<!-- 7. Glossary -->
+<h2>7. Glossary</h2>
+<dl>
+  <dt>Manning's n</dt>
+  <dd>Empirical roughness coefficient reflecting channel surface friction. Ranges from ~0.010
+    (smooth concrete) to 0.060+ (dense brush floodplain). Selected from published tables based
+    on channel material and condition.</dd>
+
+  <dt>Hydraulic Radius (R)</dt>
+  <dd>Ratio of flow cross-sectional area to wetted perimeter: R = A / P. Measures the channel's
+    flow efficiency — larger R means less friction per unit of flow area.</dd>
+
+  <dt>Wetted Perimeter (P)</dt>
+  <dd>The length of the channel boundary in contact with water in a cross-section. Does not include
+    the free water surface.</dd>
+
+  <dt>Top Width (T)</dt>
+  <dd>Width of the water surface at the top of the flow cross-section. Used to compute hydraulic
+    depth D<sub>h</sub> = A / T for Froude number calculation.</dd>
+
+  <dt>Froude Number (Fr)</dt>
+  <dd>Dimensionless ratio of flow velocity to gravity wave speed: Fr = V / √(gD<sub>h</sub>).
+    Determines whether flow is subcritical (Fr &lt; 1), critical (Fr = 1), or supercritical (Fr &gt; 1).</dd>
+
+  <dt>Normal Depth (y<sub>n</sub>)</dt>
+  <dd>Flow depth at which uniform flow occurs — gravity exactly balances friction. The depth
+    Manning's equation solves for when discharge, slope, roughness, and geometry are known.</dd>
+
+  <dt>Critical Depth (y<sub>c</sub>)</dt>
+  <dd>Depth at which specific energy is minimum for a given discharge (Fr = 1). Separates
+    subcritical from supercritical flow regimes.</dd>
+
+  <dt>Specific Energy (E)</dt>
+  <dd>Total energy per unit weight relative to the channel bottom: E = y + V²/(2g). At critical
+    depth, specific energy is minimized.</dd>
+
+  <dt>Uniform Flow</dt>
+  <dd>Steady flow where depth, velocity, and cross-section remain constant along the channel.
+    Requires a prismatic (uniform geometry) channel with constant slope.</dd>
+
+  <dt>Slope (S)</dt>
+  <dd>Longitudinal bed slope of the channel, expressed as a ratio (e.g., 0.001 = 1 ft drop per
+    1000 ft of channel length). Also called the energy gradient slope in uniform flow.</dd>
+
+  <dt>Side Slope (z)</dt>
+  <dd>Horizontal-to-vertical ratio of the channel banks (H:V). A side slope of z = 2 means the
+    bank extends 2 ft horizontally for every 1 ft of depth.</dd>
+</dl>
+
+<!-- 8. References -->
+<h2>8. References</h2>
+<ol>
+  <li>Chow, V. T. (1959). <em>Open-Channel Hydraulics</em>. McGraw-Hill. — The foundational
+    reference for Manning's equation, normal depth computation, and channel design.</li>
+  <li>Chaudhry, M. H. (2008). <em>Open-Channel Flow</em>, 2nd ed. Springer. — Modern treatment
+    with computational methods and worked examples.</li>
+  <li>U.S. Department of Transportation, FHWA. <em>Hydraulic Design Series No. 5 (HDS-5)</em>.
+    — Culvert hydraulics including Manning's equation applications.</li>
+  <li>Bentley Systems. <em>FlowMaster</em>. — Commercial open channel flow calculator used for
+    validation comparison.</li>
+</ol>
+
+<hr style="margin: 2.5rem 0 1rem; border: none; border-top: 1px solid var(--border);" />
+<p style="text-align: center; color: var(--muted); font-size: 0.85rem;">
+  manningcalc is free, open-source software. No data leaves your browser.
+</p>
+
+</div>
+</body>
+</html>
