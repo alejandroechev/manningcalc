@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { samples } from '../samples/index.js';
 import type { Sample } from '../samples/index.js';
+import { FeedbackModal } from './FeedbackModal';
 
 interface Props {
   theme: 'light' | 'dark';
@@ -14,6 +15,7 @@ interface Props {
 
 export default function Toolbar({ theme, onToggleTheme, onNew, onOpen, onSave, onReport, onLoadSample }: Props) {
   const [open, setOpen] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -63,13 +65,15 @@ export default function Toolbar({ theme, onToggleTheme, onNew, onOpen, onSave, o
         <button className="btn btn-outline btn-sm" onClick={() => window.open('/intro.html', '_blank')} title="Open channel flow guide">
           📖 Guide
         </button>
-        <button className="btn btn-outline btn-sm" onClick={() => window.open('https://github.com/alejandroechev/manningcalc/issues/new', '_blank')} title="Feedback">
+        <button className="btn btn-outline btn-sm" onClick={() => setShowFeedback(true)} title="Feedback">
           💬 Feedback
         </button>
+        <a className="github-link" href="https://github.com/alejandroechev/manningcalc" target="_blank" rel="noopener noreferrer">GitHub</a>
         <button className="btn-icon" onClick={onToggleTheme} title="Toggle theme">
           {theme === 'light' ? '🌙' : '☀️'}
         </button>
       </div>
+      {showFeedback && <FeedbackModal product="ManningCalc" onClose={() => setShowFeedback(false)} />}
     </div>
   );
 }
