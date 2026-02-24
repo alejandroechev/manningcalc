@@ -46,9 +46,10 @@ No install, no account, works on any device. What would make this useful for you
 
 I'm building free engineering calculators that run in the browser. manningcalc solves Manning's equation for normal and critical depth across multiple channel shapes. It classifies flow regime and computes all the hydraulic parameters.
 
-No more paying for FlowMaster licenses or iterating in Excel. Just open the URL and calculate.
+Use the web app directly for quick calculations and iteration.
 
 🔗 https://manningcalc.vercel.app
 📂 https://github.com/alejandroechev/manningcalc
 
 Feedback welcome from anyone doing open channel design.
+
